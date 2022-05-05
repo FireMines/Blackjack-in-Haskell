@@ -6,6 +6,7 @@ import System.Random
 import Data.Char(digitToInt)
 
 import Lib(Card(..))
+import Control.Exception (handle)
 
 startMoney = 10000
 
@@ -37,20 +38,35 @@ main = do
 gameloop :: [Card] -> [Card] -> Int -> Bool -> IO ()
 gameloop cardDeck currHand bankAccount gameDone
     | not gameDone = do
-        putStrLn $ getHand cardDeck
+        putStrLn "-----------------------------New Game Round-----------------------------"
+        --putStrLn $ getHand cardDeck
         putStrLn $ "Your hand: " ++ getHand currHand
+        let score = scoreHand currHand
+        putStrLn $ "Value in hand: " ++ show score
+
         let newDeck = removeTopCard cardDeck
-        putStrLn $ "CardDeck: " ++ getHand newDeck
-        putStrLn "Player moves: Hit, Stand, Double Down, Split Pairs"
-        let newHand = playerHit currHand newDeck
+        --putStrLn $ "CardDeck: " ++ getHand newDeck
+        putStrLn "Player moves: Hit(1), Stand(2), Double Down(3), Split Pairs(4)"
+        choice <- getLine
+        
+        let newHand = hitStandDoubleOrSplit choice newDeck currHand
         putStrLn $ "Hand after hit: " ++ getHand newHand
-        --if sum $ digitToInt newHand < 21 then do
-        --    putStrLn "Hei"
-        --    putStrLn "Paa deg"
-        --else do 
-        --    putStrLn "Nei"
-        --let hei = checkIfOverLegalValue newHand
-        gameloop cardDeck currHand bankAccount True
+
+
+        let handOverLegal = checkIfOverLegalValue newHand
+        --if length cardDeck == 0 then do
+            --let noCardsLeft = True
+        --    putStrLn "No cards left"
+        --    gameloop newDeck newHand bankAccount True
+        --putStrLn $ "Blabla " ++ getHandInt newHand
+        --putStrLn $ "Sum: " ++ show (getHandInt newHand)
+        --else do
+            --let noCardsLeft = False
+        --    putStrLn "Still some cards left"
+        --    gameloop newDeck newHand bankAccount False
+        gameloop newDeck newHand bankAccount handOverLegal
     | gameDone = 
         putStrLn "Game Over"
     | otherwise = putStrLn "You messed something up and crashed the game buddy"
+
+

@@ -8,6 +8,11 @@ module Lib
     getHand,
     removeTopCard,
     playerHit,
+    getHandInt,
+    checkIfOverLegalValue,
+    hitStandDoubleOrSplit,
+    baseScore,
+    scoreHand,
     --hand,
     Card(..)
     ) where
@@ -94,9 +99,8 @@ getHand :: [Card] -> String
 getHand currHand = concat [cardToString card ++ " " | card <- currHand]
 
 
---usp :: Card -> [Int]
---usp a [] = [a]
---usp a (x:xs) = x : hand (cardScore a) xs
+getHandInt :: [Card] -> Int
+getHandInt currHand = sum (map cardScore currHand)
 
 
 removeTopCard :: [Card] -> [Card]
@@ -107,11 +111,31 @@ playerHit :: [Card] -> [Card] -> [Card]
 playerHit hand deck = [head deck] ++ hand
 
 
---checkIfOverLegalValue :: [Card] -> Bool
---checkIfOverLegalValue currHand
---    | sum $ digitToInt currHand < 21 == False
---    | sum $ digitToInt currHand > 21 == True
---    | concat [cardScore card ++ " " | card <- currHand] < 21 = False
---    | concat [cardScore card ++ " " | card <- currHand] > 21 = True
---    | concat [cardScore card ++ " " | card <- currHand] == 21 = 
---    | otherwise = putStrLn True
+checkIfOverLegalValue :: [Card] -> Bool
+checkIfOverLegalValue currHand
+    | getHandInt currHand < 21 = False
+    | getHandInt currHand > 21 = True
+    | otherwise = True
+
+
+hitStandDoubleOrSplit :: [Char] -> [Card] -> [Card] -> [Card]
+hitStandDoubleOrSplit choice deck hand
+    | choice == "1" = playerHit hand deck
+    | choice == "2" = hand
+    | choice == "3" = hand
+    | choice == "4" = hand
+    | otherwise = hand
+
+
+-- Returns the base sum, as well as a boolean if we have
+-- a "usable" Ace.
+baseScore :: [Card] -> (Int, Bool)
+baseScore cards = (score, score <= 11 && Ace `elem` cards)
+  where
+    score = sum (cardScore <$> cards)
+
+scoreHand :: [Card] -> Int
+scoreHand cards = if hasUsableAce then score + 10 else score
+  where
+    (score, hasUsableAce) = baseScore cards
+
