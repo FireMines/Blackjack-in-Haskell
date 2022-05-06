@@ -1,5 +1,5 @@
 module Lib
-    ( 
+    (
     cardScore,
     genCardDeck,
     shuffleDeck,
@@ -13,6 +13,7 @@ module Lib
     hitStandDoubleOrSplit,
     baseScore,
     scoreHand,
+    checkIfLegalBet,
     --hand,
     Card(..)
     ) where
@@ -21,9 +22,9 @@ import Control.Monad.Random
 import qualified System.Random as Rand
 import System.Random.Shuffle (shuffleM)
 
-data Card = 
-    Two | Three | Four | Five | 
-    Six | Seven | Eight | Nine | 
+data Card =
+    Two | Three | Four | Five |
+    Six | Seven | Eight | Nine |
     Ten | Jack | Queen | King | Ace
     deriving (Show, Eq, Enum)
 
@@ -113,8 +114,8 @@ playerHit hand deck = [head deck] ++ hand
 
 checkIfOverLegalValue :: [Card] -> Bool
 checkIfOverLegalValue currHand
-    | getHandInt currHand < 21 = False
-    | getHandInt currHand > 21 = True
+    | scoreHand currHand < 21 = False
+    | scoreHand currHand > 21 = True
     | otherwise = True
 
 
@@ -134,8 +135,18 @@ baseScore cards = (score, score <= 11 && Ace `elem` cards)
   where
     score = sum (cardScore <$> cards)
 
+
 scoreHand :: [Card] -> Int
 scoreHand cards = if hasUsableAce then score + 10 else score
   where
     (score, hasUsableAce) = baseScore cards
+
+
+checkIfLegalBet :: Int -> Int -> Bool
+checkIfLegalBet bank bet
+    | bet <= bank = True
+    | bet > bank = False
+    | bet <= 0 = False
+    | otherwise = False
+
 
