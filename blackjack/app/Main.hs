@@ -3,12 +3,8 @@
 module Main where
 
 import Lib
---import qualified System.Random as Rand
 import System.Random
---import Data.Char(digitToInt)
---import Control.Monad.IO.Class
---import Lib(Card(..))
---import Control.Exception (handle)
+
 
 type GameState = ([Card], [Card], [Card], Int, Int)
 
@@ -18,7 +14,7 @@ startMoney = 10000
 
 main :: IO ()
 main = do
-    putStrLn "Welcome to Vegas Blackjack PROG2006 Special Edition!"
+    putStrLn "\ESC[2J\ESC[2J\nWelcome to Vegas Blackjack PROG2006 Special Edition!"
 
     startRound startMoney
 
