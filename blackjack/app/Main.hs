@@ -60,9 +60,8 @@ gameloop (cardDeck, currHand, dealerHand, bankAccount, bet) gameDone
             hitStandDoubleOrSplit choice (newDeck, newHand, dealerHand, bankAccount, bet)
 
 
-    | gameDone = 
+    | otherwise = 
         putStrLn "Game Over"
-    | otherwise = putStrLn "You messed something up and crashed the game buddy"
 
 
 startRound :: Int -> IO ()
@@ -102,7 +101,15 @@ hitStandDoubleOrSplit :: [Char] -> GameState -> IO ()
 hitStandDoubleOrSplit choice (deck, hand, dealerHand, bankAccount, bet) 
     | choice == "1" = gameloop (deck, hand, dealerHand, bankAccount, bet) False
     | choice == "2" = dealerHit (deck, hand, dealerHand, bankAccount, bet)
-    | choice == "3" = putStrLn "Hei 3"
+    | choice == "3" = do 
+        if bankAccount - bet <= 0 then do
+            putStrLn "\nYou can't double because you don't got enough $$$"
+            putStrLn "Player moves: Hit(1), Stand(2)"
+            newChoice <- getLine
+
+            hitStandDoubleOrSplit newChoice (deck, hand, dealerHand, bankAccount, bet)
+        else 
+            double (deck, hand, dealerHand, bankAccount - bet, bet * 2)
     | choice == "4" = putStrLn "Hei 4"
     | otherwise = putStrLn "Hei 5"
 
@@ -128,8 +135,38 @@ dealerAi (deck, hand, dealerHand, bankAccount, bet)
         putStrLn "\nDRAW! Money returned to your account."
         startRound (bankAccount+bet)
     | scoreHand dealerHand > scoreHand hand = do
-        putStrLn $ "\nDealer won!\n$" ++ show bet ++ " lost from your account."
+        putStrLn $ "\nDealer won!\n$" ++ show bet ++ " lost from your account.\n"
         startRound bankAccount
     | otherwise = do
         putStrLn "\nSomething weird happened, restarting game"
         startRound (bankAccount+bet)
+
+
+double :: GameState -> IO ()
+double (cardDeck, currHand, dealerHand, bankAccount, bet) = do
+    putStrLn "-----------------------------New Game Round-----------------------------"
+    let (newDeck, newHand) = hitMove (cardDeck, currHand)
+    --putStrLn $ getHand cardDeck
+    putStrLn $ "Your hand: " ++ getHand newHand
+    let score = scoreHand newHand
+    putStrLn $ "Value in hand: " ++ show score
+
+    putStrLn $ "\nDealer hand: " ++ getHand dealerHand
+    putStrLn $ "Dealer hand value: " ++ show (scoreHand dealerHand) ++ "\n"
+
+
+    if bankAccount > 0 then do
+        putStrLn "\nYou lost this round and your bet!\nDo you want to keep playing? (Y),(N)"
+        keepPlaying <- getLine
+        let quitGame = keepPlayingOrNot keepPlaying
+
+        if quitGame then 
+            gameloop (newDeck, newHand, dealerHand, bankAccount-bet, bet) True
+        else do
+            putStrLn "-----------------------------New Game-----------------------------"
+            startRound bankAccount
+    else do
+        putStrLn "\nYou lost this round and your bet!\nYou are unfortunatly broke and got to go home now :(\n\n"
+        gameloop (newDeck, newHand, dealerHand, bankAccount-bet, bet) True
+
+
