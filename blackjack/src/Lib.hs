@@ -7,13 +7,13 @@ module Lib
     getCard,
     getHand,
     removeTopCard,
-    playerHit,
+    hitMove,
     getHandInt,
-    checkIfOverLegalValue,
-    hitStandDoubleOrSplit,
+    --checkIfOverLegalValue,
     baseScore,
     scoreHand,
     checkIfLegalBet,
+    keepPlayingOrNot,
     --hand,
     Card(..)
     ) where
@@ -21,6 +21,7 @@ module Lib
 import Control.Monad.Random
 import qualified System.Random as Rand
 import System.Random.Shuffle (shuffleM)
+import Data.Char(toUpper)
 
 data Card =
     Two | Three | Four | Five |
@@ -108,24 +109,17 @@ removeTopCard :: [Card] -> [Card]
 removeTopCard newDeck = tail newDeck
 
 
-playerHit :: [Card] -> [Card] -> [Card]
-playerHit hand deck = [head deck] ++ hand
+hitMove :: [Card] -> [Card] -> [Card]
+hitMove hand deck = [head deck] ++ hand
 
 
-checkIfOverLegalValue :: [Card] -> Bool
-checkIfOverLegalValue currHand
-    | scoreHand currHand < 21 = False
-    | scoreHand currHand > 21 = True
-    | otherwise = True
+--checkIfOverLegalValue :: Int -> Bool
+--checkIfOverLegalValue currHand = currHand > 21
 
 
-hitStandDoubleOrSplit :: [Char] -> [Card] -> [Card] -> [Card]
-hitStandDoubleOrSplit choice deck hand
-    | choice == "1" = playerHit hand deck
-    | choice == "2" = hand
-    | choice == "3" = hand
-    | choice == "4" = hand
-    | otherwise = hand
+keepPlayingOrNot :: [Char] -> Bool
+keepPlayingOrNot keepPlaying = toUpper (head keepPlaying) /= 'N'
+
 
 
 -- Returns the base sum, as well as a boolean if we have
@@ -143,10 +137,5 @@ scoreHand cards = if hasUsableAce then score + 10 else score
 
 
 checkIfLegalBet :: Int -> Int -> Bool
-checkIfLegalBet bank bet
-    | bet <= bank = True
-    | bet > bank = False
-    | bet <= 0 = False
-    | otherwise = False
-
+checkIfLegalBet bank bet = bet <= bank
 
