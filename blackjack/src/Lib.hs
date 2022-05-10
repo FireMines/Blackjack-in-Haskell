@@ -9,12 +9,10 @@ module Lib
     removeTopCard,
     hitMove,
     getHandInt,
-    --checkIfOverLegalValue,
     baseScore,
     scoreHand,
     checkIfLegalBet,
     keepPlayingOrNot,
-    --hand,
     Card(..)
     ) where
 
@@ -115,9 +113,6 @@ hitMove (deck, hand) = (newDeck, newHand)
     where
         newHand = [head deck] ++ hand
         newDeck = removeTopCard deck
-
---checkIfOverLegalValue :: Int -> Bool
---checkIfOverLegalValue currHand = currHand > 21
 
 
 keepPlayingOrNot :: [Char] -> Bool

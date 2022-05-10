@@ -46,14 +46,11 @@ gameloop (cardDeck, currHand, dealerHand, bankAccount, bet) gameDone
                 keepPlaying <- getLine
                 let quitGame = keepPlayingOrNot keepPlaying
 
-                --seed <- newStdGen
-                --let (newSeededDeck, _) = shuffleDeck seed -- Get start deck
                 if quitGame then 
                     gameloop (newDeck, newHand, dealerHand, bankAccount-bet, bet) True
                 else do
                     putStrLn "-----------------------------New Game-----------------------------"
                     startRound bankAccount
-                --gameloop (newSeededDeck, newHand, dealerHand, bankAccount-bet, bet) quitGame
             else do
                 putStrLn "\nYou lost this round and your bet!\nYou are unfortunatly broke and got to go home now :(\n\n"
                 gameloop (newDeck, newHand, dealerHand, bankAccount-bet, bet) True
@@ -79,9 +76,9 @@ startRound bank = do
         let (seededDeck, newGen) = shuffleDeck seed -- Get start deck
         --putStrLn $ "seeddeck: " ++ getHand seededDeck
 
-        let (deck, playerHand) = hitMove (seededDeck, [])--[getCard seed] -- Get starting hand
+        let (deck, playerHand) = hitMove (seededDeck, []) -- Get starting hand
 
-        let (deckAfterDraws, firstCardDealer) = hitMove (deck, [])--[getCard seed] -- Get starting hand
+        let (deckAfterDraws, firstCardDealer) = hitMove (deck, []) -- Get starting hand
     -- putStrLn $ "CardDeck: " ++ getHand deck
 
         putStrLn "Best of luck player!"
@@ -109,34 +106,6 @@ hitStandDoubleOrSplit choice (deck, hand, dealerHand, bankAccount, bet)
     | choice == "4" = putStrLn "Hei 4"
     | otherwise = putStrLn "Hei 5"
 
-
-{- hit :: GameState -> IO ()
-hit (deck, hand, dealerHand, bankAccount, bet) = do
-    --putStr "\ESC[2J\ESC[2J\n" -- Clears the screen/ terminal
-    let (newDeck, newHand) = hitMove (deck, hand)
-    --let newDeck = removeTopCard deck
-    putStrLn "\n-----------------------------Player Hit-----------------------------"
-
-    putStrLn $ "Hand after hit: " ++ getHand newHand
-    let newScore = scoreHand newHand
-    putStrLn $ "Value in hand: " ++ show newScore
-
-    --let handOverLegal = checkIfOverLegalValue newScore
-    if newScore > 21 then do
-        if bankAccount-bet > 0 then do
-            putStrLn "\nYou lost this round and your bet!\nDo you want to keep playing? (Y),(N)"
-            keepPlaying <- getLine
-            let quitGame = keepPlayingOrNot keepPlaying
-            gameloop (newDeck, newHand, dealerHand, bankAccount-bet, bet) quitGame
-        else do
-            putStrLn "\nYou lost this round and your bet!\nYou are unfortunatly broke and got to go home now :(\n\n"
-            gameloop (newDeck, newHand, dealerHand, bankAccount-bet, bet) True
-    else do
-        putStrLn "Player moves: Hit(1), Stand(2), Double Down(3), Split Pairs(4)"
-        choice <- getLine
-        hitStandDoubleOrSplit choice (newDeck, newHand, dealerHand, bankAccount, bet)
-
- -}
 
 dealerHit :: GameState -> IO ()
 dealerHit (deck, hand, dealerHand, bankAccount, bet) = do
