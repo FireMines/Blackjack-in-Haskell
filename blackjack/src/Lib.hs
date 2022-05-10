@@ -22,6 +22,7 @@ import Control.Monad.Random
 import qualified System.Random as Rand
 import System.Random.Shuffle (shuffleM)
 import Data.Char(toUpper)
+import Data.Bool (Bool(False))
 
 data Card =
     Two | Three | Four | Five |
@@ -109,16 +110,18 @@ removeTopCard :: [Card] -> [Card]
 removeTopCard newDeck = tail newDeck
 
 
-hitMove :: [Card] -> [Card] -> [Card]
-hitMove hand deck = [head deck] ++ hand
-
+hitMove :: ([Card], [Card]) -> ([Card], [Card])
+hitMove (deck, hand) = (newDeck, newHand)
+    where
+        newHand = [head deck] ++ hand
+        newDeck = removeTopCard deck
 
 --checkIfOverLegalValue :: Int -> Bool
 --checkIfOverLegalValue currHand = currHand > 21
 
 
 keepPlayingOrNot :: [Char] -> Bool
-keepPlayingOrNot keepPlaying = toUpper (head keepPlaying) /= 'N'
+keepPlayingOrNot keepPlaying = toUpper (head keepPlaying) == 'N'
 
 
 
@@ -137,5 +140,7 @@ scoreHand cards = if hasUsableAce then score + 10 else score
 
 
 checkIfLegalBet :: Int -> Int -> Bool
+checkIfLegalBet 0 _ = False
+checkIfLegalBet _ 0 = False
 checkIfLegalBet bank bet = bet <= bank
 
