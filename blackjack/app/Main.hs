@@ -3,12 +3,12 @@
 module Main where
 
 import Lib
-import qualified System.Random as Rand
+--import qualified System.Random as Rand
 import System.Random
-import Data.Char(digitToInt)
-import Control.Monad.IO.Class
-import Lib(Card(..))
-import Control.Exception (handle)
+--import Data.Char(digitToInt)
+--import Control.Monad.IO.Class
+--import Lib(Card(..))
+--import Control.Exception (handle)
 
 type GameState = ([Card], [Card], [Card], Int, Int)
 
@@ -21,6 +21,7 @@ main = do
     putStrLn "Welcome to Vegas Blackjack PROG2006 Special Edition!"
 
     startRound startMoney
+
 
 
 --------------------------------------
@@ -72,7 +73,7 @@ startRound bank = do
 
         (newBankValue ,bettingAmount) <- getBettingAmount bank
 
-        let (seededDeck, newGen) = shuffleDeck seed -- Get start deck
+        let (seededDeck, _) = shuffleDeck seed -- Get start deck
         --putStrLn $ "seeddeck: " ++ getHand seededDeck
 
         let (deck, playerHand) = hitMove (seededDeck, []) -- Get starting hand
