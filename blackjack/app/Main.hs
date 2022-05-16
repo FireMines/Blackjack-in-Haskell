@@ -4,6 +4,7 @@ module Main where
 
 import Lib
 import System.Random
+import System.Environment
 
 
 type GameState = ([Card], [Card], [Card], Int, Int)
@@ -14,7 +15,14 @@ startMoney = 10000
 
 main :: IO ()
 main = do
-    putStrLn "\ESC[2J\ESC[2J\nWelcome to Vegas Blackjack PROG2006 Special Edition!"
+    flags <- getArgs
+    if flags /= [] then do
+        if head flags == "h" || head flags == "help" then do
+            help
+        else
+            putStrLn "\ESC[2J\ESC[2J\nWelcome to Vegas Blackjack PROG2006 Special Edition!"
+    else
+        putStrLn "\ESC[2J\ESC[2J\nWelcome to Vegas Blackjack PROG2006 Special Edition!"
 
     startRound startMoney
 
@@ -23,6 +31,23 @@ main = do
 --------------------------------------
 -- Impure functions below this line --
 --------------------------------------
+
+-- | help - Prints basics of the program to the user
+help :: IO ()
+help = do
+    putStrLn "\ESC[2J\ESC[2J\nWelcome to Vegas Blackjack PROG2006 Special Edition!"
+    putStrLn "\nThis is a game of traditional blackjack which follows the rules used in casinos in Las Vegas."
+    putStrLn "The goal is to beat the dealer and get as close to the value 21 in your hand. If you go above 21, you lose the money you bet."
+    putStrLn "The game starts with you saying how much you would like to bet."
+    putStrLn "You then get 2 cards and the dealer gets 1. You can now choose if you want to hit, stand, double or split"
+    putStrLn "Hit means you get another card, stand means its the dealers turn, double means you hit once and double your bet"
+    putStrLn "while split is only avaiable to do if you got 2 picture cards."
+    putStrLn "This is how the game plays on easily explained. If you win over the dealer (get lower than 21 but closer to 21 than the dealer did)"
+    putStrLn "you get your bet back, as well as the same amount you bet. If you loose, you loose your bet."
+    putStrLn "All you need to try to do is increase your bank account as much as you can, before the casino thrown you out"
+    putStrLn "Remember though, the house ALWAYS wins, one way or another... ;)"
+
+
 
 gameloop :: GameState -> Bool -> IO ()
 gameloop (cardDeck, currHand, dealerHand, bankAccount, bet) gameDone
@@ -43,7 +68,7 @@ gameloop (cardDeck, currHand, dealerHand, bankAccount, bet) gameDone
                 keepPlaying <- getLine
                 let quitGame = keepPlayingOrNot keepPlaying
 
-                if quitGame then 
+                if quitGame then
                     gameloop (newDeck, newHand, dealerHand, bankAccount-bet, bet) True
                 else do
                     putStrLn "-----------------------------New Game-----------------------------"
@@ -57,14 +82,14 @@ gameloop (cardDeck, currHand, dealerHand, bankAccount, bet) gameDone
             hitStandDoubleOrSplit choice (newDeck, newHand, dealerHand, bankAccount, bet)
 
 
-    | otherwise = 
+    | otherwise =
         putStrLn "Game Over"
 
 
 startRound :: Int -> IO ()
 startRound bank = do
     if bank <= 0 then gameloop ([], [], [], bank, 0) True
-    else do 
+    else do
         seed <- newStdGen
 
         (newBankValue ,bettingAmount) <- getBettingAmount bank
@@ -95,20 +120,20 @@ getBettingAmount bankAccount = do
 
 
 hitStandDoubleOrSplit :: [Char] -> GameState -> IO ()
-hitStandDoubleOrSplit choice (deck, hand, dealerHand, bankAccount, bet) 
+hitStandDoubleOrSplit choice (deck, hand, dealerHand, bankAccount, bet)
     | choice == "1" = gameloop (deck, hand, dealerHand, bankAccount, bet) False
     | choice == "2" = dealerHit (deck, hand, dealerHand, bankAccount, bet)
-    | choice == "3" = do 
+    | choice == "3" = do
         if bankAccount - bet <= 0 then do
             putStrLn "\nYou can't double because you don't got enough $$$"
             putStrLn "Player moves: Hit(1), Stand(2)"
             newChoice <- getLine
 
             hitStandDoubleOrSplit newChoice (deck, hand, dealerHand, bankAccount, bet)
-        else 
+        else
             double (deck, hand, dealerHand, bankAccount - bet, bet * 2)
     | choice == "4" = putStrLn "Hei 4"
-    | otherwise = do 
+    | otherwise = do
         putStrLn "\nThat is not a legal command/ play to make. Please play by the rules and choose one of the below: "
         putStrLn "Player moves: Hit(1), Stand(2), Double Down(3), Split Pairs(4)"
         newChoice <- getLine
@@ -162,7 +187,7 @@ double (cardDeck, currHand, dealerHand, bankAccount, bet) = do
         keepPlaying <- getLine
         let quitGame = keepPlayingOrNot keepPlaying
 
-        if quitGame then 
+        if quitGame then
             gameloop (newDeck, newHand, dealerHand, bankAccount-bet, bet) True
         else do
             putStrLn "-----------------------------New Game-----------------------------"

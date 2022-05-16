@@ -14,7 +14,7 @@ After you have made sure you got all the nessesarry stuff what you need to do is
 
 If you wish to run the tests i've implemented in this program, simply navigate in the terminal to the **\test** folder. When you are in this folder, write the command `stack test` and then all the tests should run. You can also do `stack test --coverage` to see how much test coverage ive done for this project.
 
-**NB!** If you need any help at the start of the game, simply juse the flag `help` before entering the game.
+**NB!** If you need any help at the start of the game, simply juse the flag `help` before entering the game. This is done by writing `stack run help` in the terminal when you want to play the game
 
 **NB2!** This program have only been tested on a Windows 10 desktop because i don't have any other machines avaiable to test it on. If you attempt to run this on a Mac or Linux machine it might be affected by something unknown and not work as intended.
 
