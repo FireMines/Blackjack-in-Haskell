@@ -5,141 +5,174 @@ import Test.Hspec(Spec, hspec, describe, shouldBe, it, context)
 import Test.Hspec.QuickCheck(prop)
 
 import Lib
---import Lib (boardToString)
+--import Lib (cardScore)
 
-spec_boardToString :: Spec
-spec_boardToString = do
-    describe "boardToString" $ do
+spec_cardScore :: Spec
+spec_cardScore = do
+    describe "cardScore" $ do
         it "Converts the board to a single string so its easier to write with a putStrLn" $ do
-            boardToString ["_", "_", "_", "_", "_", "_", "_", "_", "_"] `shouldBe` ("\n#___\n#___\n#___" :: String)
-            boardToString ["X", "O", "X", "O", "_", "_", "_", "_", "_"] `shouldBe` ("\n#XOX\n#O__\n#___" :: String)
+            cardScore Two `shouldBe` (2 :: Int)
+            cardScore Queen `shouldBe` (10 :: Int)
+            cardScore Ace `shouldBe` (1 :: Int)
 
-        context "if list is empty" $ do
-            it "returns an empty string" $ do
-                boardToString [] `shouldBe` ("" :: String)
+        --context "if list is empty" $ do
+        --    it "returns an empty string" $ do
+        --        cardScore [] `shouldBe` ("" :: String)
 
 
-spec_updateBoard :: Spec
-spec_updateBoard = do 
-    describe "updateBoard" $ do
+spec_cardToString :: Spec
+spec_cardToString = do 
+    describe "cardToString" $ do
         it "Updates the board with the new input" $ do
-            updateBoard ["_", "_", "_", "_", "_", "_", "_", "_", "_"] 0 "X" `shouldBe` (["X","_","_","_","_","_","_","_","_"] :: [String])
-            updateBoard ["X", "O", "X", "O", "_", "_", "_", "_", "_"] 8 "O" `shouldBe` (["X","O","X","O","_","_","_","_","O"] :: [String])
+            cardToString Six `shouldBe` ("6" :: String)
+            cardToString Nine `shouldBe` ("9" :: String)
+            cardToString Three `shouldBe` ("3" :: String)
 
 
-spec_make2DList :: Spec
-spec_make2DList = do
-    describe "make2DList" $ do
-        it "Converts the board to a single string so its easier to write with a putStrLn" $ do
-            make2DList 3 ["_", "_", "_", "_", "_", "_", "_", "_", "_"] `shouldBe` ([["_","_","_"],["_","_","_"],["_","_","_"]] :: [[String]])
-            make2DList 3 ["X", "O", "X", "O", "_", "_", "_", "_", "_"] `shouldBe` ([["X","O","X"],["O","_","_"],["_","_","_"]] :: [[String]])
-
-        context "if list is empty" $ do
-            it "returns a n long empty 2d string" $ do
-                make2DList 3 [] `shouldBe` ([["_","_","_"],["_","_","_"],["_","_","_"]] :: [[String]])    
-                make2DList 1 [] `shouldBe` ([["_"]] :: [[String]]) 
+spec_genCardDeck :: Spec
+spec_genCardDeck = do
+    describe "genCardDeck" $ do
+        it "Generates a 52x4 card deck to be used in the game" $ do
+            genCardDeck  `shouldBe` ([Two,Three,Four,Five,Six,Seven,Eight,Nine,Ten,Jack,Queen,King,Ace,Two,Three,Four,Five,Six,Seven,Eight,Nine,Ten,Jack,Queen,King,Ace,Two,Three,Four,Five,Six,Seven,Eight,Nine,Ten,Jack,Queen,King,Ace,Two,Three,Four,Five,Six,Seven,Eight,Nine,Ten,Jack,Queen,King,Ace] :: [Card])
 
 
-spec_won :: Spec
-spec_won = do
-    describe "won" $ do
-        it "Checks if a player has won or not" $ do
-            won [["_","_","_"],["_","_","_"],["_","_","_"]] "X" `shouldBe` (False :: Bool)
-            won [["X","O","X"],["O","_","_"],["_","_","_"]] "O" `shouldBe` (False :: Bool)
-            won [["X","O","X"],["O","X","O"],["X","O","X"]] "O" `shouldBe` (True :: Bool)
+--spec_shuffleDeck :: Spec
+--spec_shuffleDeck = do
+--    describe "shuffleDeck" $ do
+--        it "Checks if a player has shuffleDeck or not" $ do
+--            shuffleDeck [["_","_","_"],["_","_","_"],["_","_","_"]] "X" `shouldBe` (False :: Bool)
+--            shuffleDeck [["X","O","X"],["O","_","_"],["_","_","_"]] "O" `shouldBe` (False :: Bool)
+--            shuffleDeck [["X","O","X"],["O","X","O"],["X","O","X"]] "O" `shouldBe` (True :: Bool)
 
-spec_swapCorner :: Spec
-spec_swapCorner = do
-    describe "swapCorner" $ do
-        it "Swaps the corner of index 0 with index 2" $ do
-            swapCorner ["X", "_", "_", "_", "_", "_", "_", "_", "_"] `shouldBe` (["_","_","X","_","_","_","_","_","_"] :: [String])
-            swapCorner ["X", "O", "X", "O", "_", "_", "_", "_", "_"] `shouldBe` (["X","O","X","O","_","_","_","_","_"] :: [String])
+spec_getHand :: Spec
+spec_getHand = do
+    describe "getHand" $ do
+        it "Gets the hand in the form of a string so it can be shown in terminal" $ do
+            getHand [Ace, Two, Three] `shouldBe` ("A 2 3 " :: String)
+            getHand [Nine, Seven, Three] `shouldBe` ("9 7 3 " :: String)
 
-spec_rollLeft :: Spec
-spec_rollLeft = do
-    describe "rollLeft" $ do
-        it "Makes the board roll to the left" $ do
-            rollLeft ["X", "_", "_", "_", "_", "_", "_", "_", "_"] `shouldBe` (["X","_","_","_","_","_","_","_","_"] :: [String])
-            rollLeft ["X", "O", "X", "O", "_", "_", "_", "_", "_"] `shouldBe` (["X","_","_","O","_","_","X","O","_"] :: [String]) 
-
-
-spec_rollRight :: Spec
-spec_rollRight = do
-    describe "rollRight" $ do
-        it "Makes the board roll to the right" $ do
-            rollRight ["X", "_", "_", "_", "_", "_", "_", "_", "_"] `shouldBe` (["_","_","_","_","_","_","_","_","X"] :: [String])
-            rollRight ["X", "O", "X", "O", "_", "_", "_", "_", "_"] `shouldBe` (["_","O","X","_","_","O","_","_","X"] :: [String])     
-
-spec_rollOrKeepBoard :: Spec
-spec_rollOrKeepBoard = do
-    describe "rollOrKeepBoard" $ do
-        it "Rolls board to left or right depending on input, if N then does not roll" $ do
-            rollOrKeepBoard "R" ["_", "_", "_", "_", "_", "_", "_", "_", "_"] 5 "X" `shouldBe` (["_","_","_","_","_","_","_","X","_"] :: [String])
-            rollOrKeepBoard "L" ["X", "O", "X", "O", "_", "_", "_", "_", "_"] 4 "O" `shouldBe` (["X","_","_","O","O","_","X","O","_"] :: [String])
-            rollOrKeepBoard "N" ["X", "O", "X", "O", "_", "_", "_", "_", "_"] 4 "O" `shouldBe` (["X","O","X","O","O","_","_","_","_"] :: [String])
+spec_getHandInt :: Spec
+spec_getHandInt = do
+    describe "getHandInt" $ do
+        it "Gets the hand in the form of a Int so it can be shown in terminal" $ do
+            getHandInt [Ace, King, Jack] `shouldBe` (21 :: Int) 
+            getHandInt [Ace, Two, Three] `shouldBe` (6 :: Int) 
 
 
-        context "if input an illegal rotation or not N" $ do
-            it "returns board as if said No" $ do
-                rollOrKeepBoard "HABBO" ["X", "O", "X", "O", "_", "_", "_", "_", "_"] 8 "X" `shouldBe` (["X","O","X","O","_","_","_","_","X"] :: [String])
+spec_removeTopCard :: Spec
+spec_removeTopCard = do
+    describe "removeTopCard" $ do
+        it "Removes the top card of the deck" $ do
+            removeTopCard [Ace, Two, Three] `shouldBe` ([Two, Three] :: [Card])
+            removeTopCard [King, Five, Eight] `shouldBe` ([Five, Eight] :: [Card])
+
+spec_hitMove :: Spec
+spec_hitMove = do
+    describe "hitMove" $ do
+        it "Gets a new card into hand and removes top card from deck" $ do
+            hitMove ([Ten, Five, Four], [Five, Six]) `shouldBe` (([Five, Four], [Ten, Five, Six]) :: ([Card], [Card]))
+            hitMove ([Ace, King, Four], [Queen, Six]) `shouldBe` (([King, Four], [Ace, Queen, Six]) :: ([Card], [Card]))
+            hitMove ([Two, Three, Four], [Five, Six]) `shouldBe` (([Three, Four], [Two, Five, Six]) :: ([Card], [Card]))
 
 
-spec_aiRotateOrKeepBoard :: Spec 
-spec_aiRotateOrKeepBoard = do
-    describe "aiRotateOrKeepBoard" $ do
-        it "Returns R for right L for left or N for No if it should roll or not" $ do
-            aiRotateOrKeepBoard 0 `shouldBe` ("R" :: String)
-            aiRotateOrKeepBoard 1 `shouldBe` ("L" :: String)
-            aiRotateOrKeepBoard 2 `shouldBe` ("N" :: String)
+spec_keepPlayingOrNot :: Spec 
+spec_keepPlayingOrNot = do
+    describe "keepPlayingOrNot" $ do
+        it "Returns a bool depending on if input is N or something else" $ do
+            keepPlayingOrNot "N" `shouldBe` (True :: Bool)
+            keepPlayingOrNot "PROG2006" `shouldBe` (False :: Bool)
+            keepPlayingOrNot "Y" `shouldBe` (False :: Bool)
+            keepPlayingOrNot "n" `shouldBe` (True :: Bool)
 
 
-        context "if input is another than the 3 specified" $ do
-            it "returns as if said No" $ do
-                aiRotateOrKeepBoard 1000        `shouldBe` ("N" :: String)
-                aiRotateOrKeepBoard 23452342    `shouldBe` ("N" :: String)
+spec_baseScore :: Spec 
+spec_baseScore = do
+    describe "baseScore" $ do
+        it "Returns the base sum, as well as a boolean if we have" $ do
+            baseScore [Ten] `shouldBe` ((10, False) :: (Int, Bool))
+            baseScore [Three, Four] `shouldBe` ((7, False) :: (Int, Bool))
+            baseScore [Ace, Ace] `shouldBe` ((2, True) :: (Int, Bool))
 
 
-testBoardToString :: Test 
-testBoardToString = TestCase (assertEqual "List of all _ should print all _ to screen with new lines" "\n#___\n#___\n#___" (boardToString ["_", "_", "_", "_", "_", "_", "_", "_", "_"]))
+spec_scoreHand :: Spec 
+spec_scoreHand = do
+    describe "scoreHand" $ do
+        it "Gets the score of the hand as an Int" $ do
+            scoreHand [King, Jack] `shouldBe` (20 :: Int)
+            scoreHand [Ten, Two] `shouldBe` (12 :: Int)
+            scoreHand [Eight] `shouldBe` (8 :: Int)
 
-testUpdateBoard :: Test 
-testUpdateBoard = TestCase (assertEqual "Updates board with mark on index" ["X","O","X","O","_","_","_","_","O"] (updateBoard ["X", "O", "X", "O", "_", "_", "_", "_", "_"] 8 "O"))
 
-testMake2DList :: Test 
-testMake2DList = TestCase (assertEqual "Makes a 2D list of input list" [["X","O","X"],["O","_","_"],["_","_","_"]] (make2DList 3 ["X", "O", "X", "O", "_", "_", "_", "_", "_"]))
+spec_checkIfLegalBet :: Spec 
+spec_checkIfLegalBet = do
+    describe "checkIfLegalBet" $ do
+        it "Checks if bet is lower than bank account making it legal to bet the amount" $ do
+            checkIfLegalBet 50 50`shouldBe` (True :: Bool)
+            checkIfLegalBet 100 10`shouldBe` (True :: Bool)
+            checkIfLegalBet 20 200`shouldBe` (False :: Bool)
 
-testWon :: Test 
-testWon = TestCase (assertEqual "Checks if game is won" True (won [["X","O","X"],["O","X","O"],["X","O","X"]] "O"))
 
-testSwapCorner :: Test 
-testSwapCorner = TestCase (assertEqual "Swaps corners on index 0 and 2" ["X","O","X","O","_","_","_","_","_"] (swapCorner ["X", "O", "X", "O", "_", "_", "_", "_", "_"]))
+        context "if input is not defined it one of the two input areas" $ do
+            it "returns as False" $ do
+                checkIfLegalBet 1000 0       `shouldBe` (False :: Bool)
+                checkIfLegalBet 23452342 0   `shouldBe` (False :: Bool)
 
-testRollLeft :: Test 
-testRollLeft = TestCase (assertEqual "Rolls the whole board left" ["X","_","_","_","_","_","_","_","_"] (rollLeft ["X", "_", "_", "_", "_", "_", "_", "_", "_"]))
 
-testRollRight :: Test 
-testRollRight = TestCase (assertEqual "Rolls the whole board left" ["X","_","_","O","_","_","X","O","_"] (rollLeft ["X", "O", "X", "O", "_", "_", "_", "_", "_"]))
 
-testRollOrKeepBoard :: Test 
-testRollOrKeepBoard = TestCase (assertEqual "Rolls the whole board right, left or not at all" ["X","_","_","O","O","_","X","O","_"] (rollOrKeepBoard "L" ["X", "O", "X", "O", "_", "_", "_", "_", "_"] 4 "O"))
+testcardScore :: Test 
+testcardScore = TestCase (assertEqual "Gets the card value" 5 (cardScore Five))
 
-testAiRotateOrKeepBoard :: Test 
-testAiRotateOrKeepBoard = TestCase (assertEqual "Checks if ai chose to roll left right or not at all" "L" (aiRotateOrKeepBoard 1))
+testcardToString :: Test 
+testcardToString = TestCase (assertEqual "Gets the card value" "2" (cardToString Two))
+
+testgenCardDeck :: Test 
+testgenCardDeck = TestCase (assertEqual "Generates a 52 card deck to be used in the game" [Two,Three,Four,Five,Six,Seven,Eight,Nine,Ten,Jack,Queen,King,Ace,Two,Three,Four,Five,Six,Seven,Eight,Nine,Ten,Jack,Queen,King,Ace,Two,Three,Four,Five,Six,Seven,Eight,Nine,Ten,Jack,Queen,King,Ace,Two,Three,Four,Five,Six,Seven,Eight,Nine,Ten,Jack,Queen,King,Ace] genCardDeck)
+
+--testshuffleDeck :: Test 
+--testshuffleDeck = TestCase (assertEqual "Shuffles the deck to make it random based on seed" True (shuffleDeck 17))
+
+testgetHand :: Test 
+testgetHand = TestCase (assertEqual "Gets the hand in the form of a string so it can be shown in terminal" "A 2 3 " (getHand [Ace, Two, Three]))
+
+testgetHandInt :: Test 
+testgetHandInt = TestCase (assertEqual "Gets the hand in the form of a Int so it can be shown in terminal" 6 (getHandInt [Ace, Two, Three]))
+
+testremoveTopCard :: Test 
+testremoveTopCard = TestCase (assertEqual "Removes the top card of the deck" [Three] (removeTopCard [Two, Three]))
+
+testhitMove :: Test 
+testhitMove = TestCase (assertEqual "Gets a new card into hand and removes top card from deck" ([Three, Four], [Two, Five, Six]) (hitMove ([Two, Three, Four], [Five, Six])))
+
+testkeepPlayingOrNot :: Test 
+testkeepPlayingOrNot = TestCase (assertEqual "Returns a bool depending on if input is N or something else" False (keepPlayingOrNot "Heihei"))
+
+testbaseScore :: Test 
+testbaseScore = TestCase (assertEqual "Returns the base sum, as well as a boolean if we have" (12, False) (baseScore [Queen, Two]))
+
+testscoreHand :: Test 
+testscoreHand = TestCase (assertEqual "Gets the score of the hand as an Int" 10 (scoreHand [Ten]))
+
+testcheckIfLegalBet :: Test 
+testcheckIfLegalBet = TestCase (assertEqual "Checks if bet is lower than bank account making it legal to bet the amount" False (checkIfLegalBet 10 20))
+
 
 
 --
 -- List of all unit tests
 unitTests :: Test
 unitTests = TestList [
-  TestLabel "boardToString empty" testBoardToString,
-  TestLabel "updateBoard [] 8 O" testUpdateBoard,
-  TestLabel "make2DList 3 []" testMake2DList,
-  TestLabel "won [] O" testWon,
-  TestLabel "swapCorner []" testSwapCorner,
-  TestLabel "rollLeft []" testRollLeft,
-  TestLabel "rollRight []" testRollRight,
-  TestLabel "testRollOrKeepBoard [] 4 O" testRollOrKeepBoard,
-  TestLabel "aiRotateOrKeepBoard 1" testAiRotateOrKeepBoard
+  TestLabel "cardScore" testcardScore,
+  TestLabel "cardToString" testcardToString,
+  TestLabel "genCardDeck" testgenCardDeck,
+  --TestLabel "shuffleDeck" testshuffleDeck,
+  TestLabel "getHand" testgetHand,
+  TestLabel "getHandInt" testgetHandInt,
+  TestLabel "removeTopCard" testremoveTopCard,
+  TestLabel "testhitMove" testhitMove,
+  --TestLabel "keepPlayingOrNot" testkeepPlayingOrNot
+  TestLabel "baseScore" testbaseScore,
+  TestLabel "scoreHand" testscoreHand,
+  TestLabel "checkIfLegalBet" testcheckIfLegalBet
   ]
 
 
@@ -151,12 +184,15 @@ main = do
     _ <- runTestTT unitTests
 
     hspec $ do
-        spec_boardToString
-        spec_updateBoard
-        spec_make2DList
-        spec_won
-        spec_swapCorner
-        spec_rollLeft
-        spec_rollRight
-        spec_rollOrKeepBoard
-        spec_aiRotateOrKeepBoard
+        spec_cardScore
+        spec_cardToString
+        spec_genCardDeck
+        --spec_shuffleDeck
+        spec_getHand
+        spec_getHandInt
+        spec_removeTopCard
+        spec_hitMove
+        spec_keepPlayingOrNot
+        spec_baseScore
+        spec_scoreHand
+        spec_checkIfLegalBet

@@ -108,7 +108,12 @@ hitStandDoubleOrSplit choice (deck, hand, dealerHand, bankAccount, bet)
         else 
             double (deck, hand, dealerHand, bankAccount - bet, bet * 2)
     | choice == "4" = putStrLn "Hei 4"
-    | otherwise = putStrLn "Hei 5"
+    | otherwise = do 
+        putStrLn "\nThat is not a legal command/ play to make. Please play by the rules and choose one of the below: "
+        putStrLn "Player moves: Hit(1), Stand(2), Double Down(3), Split Pairs(4)"
+        newChoice <- getLine
+
+        hitStandDoubleOrSplit newChoice (deck, hand, dealerHand, bankAccount, bet)
 
 
 dealerHit :: GameState -> IO ()
