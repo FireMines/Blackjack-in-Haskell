@@ -37,12 +37,11 @@ help = do
     putStrLn "\nThis is a game of traditional blackjack which follows the rules used in casinos in Las Vegas."
     putStrLn "The goal is to beat the dealer and get as close to the value 21 in your hand. If you go above 21, you lose the money you bet."
     putStrLn "The game starts with you saying how much you would like to bet."
-    putStrLn "You then get 2 cards and the dealer gets 1. You can now choose if you want to hit, stand, double or split"
-    putStrLn "Hit means you get another card, stand means its the dealers turn, double means you hit once and double your bet"
-    putStrLn "while split is only avaiable to do if you got 2 picture cards."
+    putStrLn "You then get 2 cards and the dealer gets 1. You can now choose if you want to hit, stand or double."
+    putStrLn "Hit means you get another card, stand means its the dealers turn, double means you hit once and double your bet."
     putStrLn "This is how the game plays on easily explained. If you win over the dealer (get lower than 21 but closer to 21 than the dealer did)"
     putStrLn "you get your bet back, as well as the same amount you bet. If you loose, you loose your bet."
-    putStrLn "All you need to try to do is increase your bank account as much as you can, before the casino thrown you out"
+    putStrLn "All you need to try to do is increase your bank account as much as you can, before the casino thrown you out!"
     putStrLn "Remember though, the house ALWAYS wins, one way or another... ;)"
 
 
@@ -75,7 +74,7 @@ gameloop (cardDeck, currHand, dealerHand, bankAccount, bet) gameDone
                 putStrLn "\nYou lost this round and your bet!\nYou are unfortunatly broke and got to go home now :(\n\n"
                 gameloop (newDeck, newHand, dealerHand, bankAccount-bet, bet) True
         else do
-            putStrLn "Player moves: Hit(1), Stand(2), Double Down(3), Split Pairs(4)"
+            putStrLn "Player moves: Hit(1), Stand(2) or Double Down(3)"
             choice <- getLine
             hitStandDoubleOrSplit choice (newDeck, newHand, dealerHand, bankAccount, bet)
 
@@ -125,18 +124,17 @@ hitStandDoubleOrSplit choice (deck, hand, dealerHand, bankAccount, bet)
     | choice == "1" = gameloop (deck, hand, dealerHand, bankAccount, bet) False
     | choice == "2" = dealerHit (deck, hand, dealerHand, bankAccount, bet)
     | choice == "3" = do
-        if bankAccount - bet <= 0 then do
+        if bankAccount - bet < 0 then do
             putStrLn "\nYou can't double because you don't got enough $$$"
-            putStrLn "Player moves: Hit(1), Stand(2)"
+            putStrLn "Player moves: Hit(1) or Stand(2)"
             newChoice <- getLine
 
             hitStandDoubleOrSplit newChoice (deck, hand, dealerHand, bankAccount, bet)
         else
             double (deck, hand, dealerHand, bankAccount - bet, bet * 2)
-    | choice == "4" = putStrLn "Hei 4"
     | otherwise = do
         putStrLn "\nThat is not a legal command/ play to make. Please play by the rules and choose one of the below: "
-        putStrLn "Player moves: Hit(1), Stand(2), Double Down(3), Split Pairs(4)"
+        putStrLn "Player moves: Hit(1), Stand(2) or Double Down(3)"
         newChoice <- getLine
 
         hitStandDoubleOrSplit newChoice (deck, hand, dealerHand, bankAccount, bet)
@@ -179,25 +177,10 @@ double (cardDeck, currHand, dealerHand, bankAccount, bet) = do
     let (newDeck, newHand) = hitMove (cardDeck, currHand)
     --putStrLn $ getHand cardDeck
     putStrLn $ "Your hand: " ++ getHand newHand
-    let score = scoreHand newHand
-    putStrLn $ "Value in hand: " ++ show score
+    putStrLn $ "Value in hand: " ++ show (scoreHand newHand)
 
     putStrLn $ "\nDealer hand: " ++ getHand dealerHand
     putStrLn $ "Dealer hand value: " ++ show (scoreHand dealerHand) ++ "\n"
 
-
-    if bankAccount > 0 then do
-        putStrLn "\nYou lost this round and your bet!\nDo you want to keep playing? (Y),(N)"
-        keepPlaying <- getLine
-        let quitGame = keepPlayingOrNot keepPlaying
-
-        if quitGame then
-            gameloop (newDeck, newHand, dealerHand, bankAccount-bet, bet) True
-        else do
-            putStrLn "-----------------------------New Game-----------------------------"
-            startRound bankAccount
-    else do
-        putStrLn "\nYou lost this round and your bet!\nYou are unfortunatly broke and got to go home now :(\n\n"
-        gameloop (newDeck, newHand, dealerHand, bankAccount-bet, bet) True
-
+    dealerHit (newDeck, newHand, dealerHand, bankAccount, bet)
 
