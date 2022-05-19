@@ -76,7 +76,7 @@ gameloop (cardDeck, currHand, dealerHand, bankAccount, bet) gameDone
         else do
             putStrLn "Player moves: Hit(1), Stand(2) or Double Down(3)"
             choice <- getLine
-            hitStandDoubleOrSplit choice (newDeck, newHand, dealerHand, bankAccount, bet)
+            hitStandOrDouble choice (newDeck, newHand, dealerHand, bankAccount, bet)
 
 
     | otherwise =
@@ -118,9 +118,9 @@ getBettingAmount bankAccount = do
         getBettingAmount bankAccount
 
 
--- | hitStandDoubleOrSplit - Decides player moves
-hitStandDoubleOrSplit :: [Char] -> GameState -> IO ()
-hitStandDoubleOrSplit choice (deck, hand, dealerHand, bankAccount, bet)
+-- | hitStandOrDouble - Decides player moves
+hitStandOrDouble :: [Char] -> GameState -> IO ()
+hitStandOrDouble choice (deck, hand, dealerHand, bankAccount, bet)
     | choice == "1" = gameloop (deck, hand, dealerHand, bankAccount, bet) False
     | choice == "2" = dealerHit (deck, hand, dealerHand, bankAccount, bet)
     | choice == "3" = do
@@ -129,7 +129,7 @@ hitStandDoubleOrSplit choice (deck, hand, dealerHand, bankAccount, bet)
             putStrLn "Player moves: Hit(1) or Stand(2)"
             newChoice <- getLine
 
-            hitStandDoubleOrSplit newChoice (deck, hand, dealerHand, bankAccount, bet)
+            hitStandOrDouble newChoice (deck, hand, dealerHand, bankAccount, bet)
         else
             double (deck, hand, dealerHand, bankAccount - bet, bet * 2)
     | otherwise = do
@@ -137,7 +137,7 @@ hitStandDoubleOrSplit choice (deck, hand, dealerHand, bankAccount, bet)
         putStrLn "Player moves: Hit(1), Stand(2) or Double Down(3)"
         newChoice <- getLine
 
-        hitStandDoubleOrSplit newChoice (deck, hand, dealerHand, bankAccount, bet)
+        hitStandOrDouble newChoice (deck, hand, dealerHand, bankAccount, bet)
 
 
 -- | dealerHit - Dealer hitting if his AI tells him to do it
