@@ -10,14 +10,11 @@ import System.Environment
 type GameState = ([Card], [Card], [Card], Int, Int)
 
 
-startMoney :: Int
-startMoney = 10000
-
 main :: IO ()
 main = do
     flags <- getArgs
     if flags /= [] then do
-        if head flags == "h" || head flags == "help" then do
+        if head flags == "--h" || head flags == "--help" || head flags == "help" then do
             help
         else
             putStrLn "\ESC[2J\ESC[2J\nWelcome to Vegas Blackjack PROG2006 Special Edition!"
@@ -31,6 +28,7 @@ main = do
 --------------------------------------
 -- Impure functions below this line --
 --------------------------------------
+
 
 -- | help - Prints basics of the program to the user
 help :: IO ()
@@ -48,7 +46,7 @@ help = do
     putStrLn "Remember though, the house ALWAYS wins, one way or another... ;)"
 
 
-
+-- | gameloop - Loops the main areas of the game
 gameloop :: GameState -> Bool -> IO ()
 gameloop (cardDeck, currHand, dealerHand, bankAccount, bet) gameDone
     | not gameDone = do
@@ -86,6 +84,7 @@ gameloop (cardDeck, currHand, dealerHand, bankAccount, bet) gameDone
         putStrLn "Game Over"
 
 
+-- | startRound - first round of a new game
 startRound :: Int -> IO ()
 startRound bank = do
     if bank <= 0 then gameloop ([], [], [], bank, 0) True
@@ -106,6 +105,7 @@ startRound bank = do
         gameloop (deckAfterDraws, playerHand, firstCardDealer, newBankValue, bettingAmount) False
 
 
+-- | getBettingAmount - Gets the bet from player and updates bank account
 getBettingAmount :: Int -> IO (Int, Int)
 getBettingAmount bankAccount = do
     putStrLn $ "\nYour bank account: $" ++ show bankAccount
@@ -119,6 +119,7 @@ getBettingAmount bankAccount = do
         getBettingAmount bankAccount
 
 
+-- | hitStandDoubleOrSplit - Decides player moves
 hitStandDoubleOrSplit :: [Char] -> GameState -> IO ()
 hitStandDoubleOrSplit choice (deck, hand, dealerHand, bankAccount, bet)
     | choice == "1" = gameloop (deck, hand, dealerHand, bankAccount, bet) False
@@ -141,6 +142,7 @@ hitStandDoubleOrSplit choice (deck, hand, dealerHand, bankAccount, bet)
         hitStandDoubleOrSplit newChoice (deck, hand, dealerHand, bankAccount, bet)
 
 
+-- | dealerHit - Dealer hitting if his AI tells him to do it
 dealerHit :: GameState -> IO ()
 dealerHit (deck, hand, dealerHand, bankAccount, bet) = do
     let (newDeck, dealerHitHand) = hitMove (deck, dealerHand)
@@ -151,6 +153,7 @@ dealerHit (deck, hand, dealerHand, bankAccount, bet) = do
     dealerAi (newDeck, hand, dealerHitHand, bankAccount, bet)
 
 
+-- | dealerAi - The core ai mechanisms depending on how the gamestate is
 dealerAi :: GameState -> IO ()
 dealerAi (deck, hand, dealerHand, bankAccount, bet)
     | scoreHand dealerHand > 21 = do
@@ -169,6 +172,7 @@ dealerAi (deck, hand, dealerHand, bankAccount, bet)
         startRound (bankAccount+bet)
 
 
+-- | double - If player chooses to double the value of his bet
 double :: GameState -> IO ()
 double (cardDeck, currHand, dealerHand, bankAccount, bet) = do
     putStrLn "-----------------------------New Game Round-----------------------------"

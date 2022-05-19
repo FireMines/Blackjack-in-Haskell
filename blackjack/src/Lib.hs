@@ -1,5 +1,6 @@
 module Lib
     (
+    startMoney,
     cardScore,
     genCardDeck,
     shuffleDeck,
@@ -28,6 +29,9 @@ data Card =
     Ten | Jack | Queen | King | Ace
     deriving (Show, Eq, Enum)
 
+-- | startMoney - The amount of money the player starts with in their bank
+startMoney :: Int
+startMoney = 10000
 
 -- Gets the card value
 -- | cardScore
