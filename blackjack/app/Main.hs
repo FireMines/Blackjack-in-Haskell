@@ -182,5 +182,20 @@ double (cardDeck, currHand, dealerHand, bankAccount, bet) = do
     putStrLn $ "\nDealer hand: " ++ getHand dealerHand
     putStrLn $ "Dealer hand value: " ++ show (scoreHand dealerHand) ++ "\n"
 
-    dealerHit (newDeck, newHand, dealerHand, bankAccount, bet)
+    if scoreHand newHand > 21 then do
+        if bankAccount > 0 then do
+            putStrLn "\nYou lost this round and your bet!\nDo you want to keep playing? (Y),(N)"
+            keepPlaying <- getLine
+            let quitGame = keepPlayingOrNot keepPlaying
+
+            if quitGame then
+                gameloop (newDeck, newHand, dealerHand, bankAccount-bet, bet) True
+            else do
+                putStrLn "-----------------------------New Game-----------------------------"
+                startRound bankAccount
+        else do
+            putStrLn "\nYou lost this round and your bet!\nYou are unfortunatly broke and got to go home now :(\n\n"
+            gameloop (newDeck, newHand, dealerHand, bankAccount-bet, bet) True
+    else do
+         dealerHit (newDeck, newHand, dealerHand, bankAccount, bet)
 
